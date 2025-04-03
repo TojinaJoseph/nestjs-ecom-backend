@@ -17,9 +17,9 @@ import { Products } from './products/products.entity';
         synchronize:true,
         autoLoadEntities:true,
         port:5432,
-        username:'postgres',
-        password:'postdb123#',
-        database:'nestjs-ecom'
+        username:'',
+        password:'',
+        database:''
       })
         
     })
