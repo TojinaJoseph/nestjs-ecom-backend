@@ -4,13 +4,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Products } from '../products.entity';
 import { Repository } from 'typeorm';
 import { PatchProductDto } from '../dtos/patch-product.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProductsService {
 
     constructor(
         @InjectRepository(Products)
-        private readonly productsRepository:Repository<Products>
+        private readonly productsRepository:Repository<Products>,
+
+        //inject configservice for env variables
+
+        private readonly configService:ConfigService
     ){}
 
      //service for get one product
@@ -35,6 +40,7 @@ export class ProductsService {
     //service for get all products
 
     public async getProducts(){
+  
         let products;
         try {
             products=await this.productsRepository.find()
