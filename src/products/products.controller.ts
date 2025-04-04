@@ -1,7 +1,10 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { ProductsService } from './providers/products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PatchProductDto } from './dtos/patch-product.dto';
 
+@ApiTags("Products")
 @Controller('products')
 export class ProductsController {
 
@@ -12,16 +15,30 @@ export class ProductsController {
     
     ){}
 
-// route for getting products
+// route for getting one product
 
     @Get('/:id')
+    @ApiOperation({
+      summary:"fetch a product"
+    })
+    @ApiResponse({
+      status:200,
+      description:"product fetched successfully"
+    })
     public getProduct(@Param('id',ParseIntPipe) id:number){
-       return this.productsService.getProduct(id)
+       return this.productsService.getProductById(id)
     }
 
 // route for getting products
 
     @Get()
+    @ApiOperation({
+      summary:"fetch all products"
+    })
+    @ApiResponse({
+      status:200,
+      description:"products fetched successfully"
+    })
     public getProducts(){
        return this.productsService.getProducts()
     }
@@ -29,22 +46,43 @@ export class ProductsController {
 //route for creating product
 
    @Post()
+   @ApiOperation({
+      summary:"create a product"
+    })
+    @ApiResponse({
+      status:200,
+      description:"products created successfully"
+    })
    public createProduct(@Body() createProductDto:CreateProductDto){
     return this.productsService.createProduct(createProductDto)
    }
 
-//route for creating product
+//route for upating product - patch
 
    @Patch()
-   public updateProduct(){
-    return this.productsService.updateProduct()
+   @ApiOperation({
+      summary:"update a product"
+    })
+    @ApiResponse({
+      status:200,
+      description:"products updated successfully"
+    })
+   public updateProduct(@Body() patchProductDto:PatchProductDto){
+    return this.productsService.updateProduct(patchProductDto)
    }
 
-//route for creating product
+//route for deleting product
 
    @Delete()
-   public deleteProduct(){
-    return this.productsService.deleteProduct()
+   @ApiOperation({
+      summary:"delete a product"
+    })
+    @ApiResponse({
+      status:200,
+      description:"products deleted successfully"
+    })
+   public deleteProduct(@Query('id',ParseIntPipe) id:number){
+    return this.productsService.deleteProduct(id)
    }
 
 }

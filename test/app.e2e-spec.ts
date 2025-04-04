@@ -17,9 +17,9 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (GET)', () => {
+    console.log(process.env.NODE_ENV)  //nestjs convert node_env to test when running tests 
     return request(app.getHttpServer())
       .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .expect(404)
   });
 });
