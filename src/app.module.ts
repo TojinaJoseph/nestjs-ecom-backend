@@ -14,6 +14,7 @@ import  appConfig  from './config/app.config';
 import databaseConfig from './config/database.config';
 import environmentValidation from './config/environment.validation';
 import { AuthenticationGuard } from './auth/guards/authentication/authentication.guard';
+import { CartModule } from './cart/cart.module';
 
 const ENV=process.env.NODE_ENV
 @Module({
@@ -45,7 +46,8 @@ const ENV=process.env.NODE_ENV
     }),
     AuthModule,
     ConfigModule.forFeature(jwtConfig),
-    JwtModule.registerAsync(jwtConfig.asProvider())
+    JwtModule.registerAsync(jwtConfig.asProvider()),
+    CartModule
   ],
   controllers: [AppController],
   providers: [

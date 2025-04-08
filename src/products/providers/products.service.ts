@@ -5,6 +5,8 @@ import { Products } from '../products.entity';
 import { Repository } from 'typeorm';
 import { PatchProductDto } from '../dtos/patch-product.dto';
 import { ConfigService } from '@nestjs/config';
+import { CartItem } from 'src/cart/cart-item.entity';
+
 
 @Injectable()
 export class ProductsService {
@@ -13,9 +15,13 @@ export class ProductsService {
         @InjectRepository(Products)
         private readonly productsRepository:Repository<Products>,
 
+        @InjectRepository(CartItem)
+        private readonly cartItemRepository:Repository<CartItem>,
+
         //inject configservice for env variables
 
-        private readonly configService:ConfigService
+        private readonly configService:ConfigService,
+
     ){}
 
      //service for get one product
@@ -81,7 +87,9 @@ export class ProductsService {
         let newProduct=this.productsRepository.create(data)
 
         try {
-            newProduct=await this.productsRepository.save(newProduct)    
+            newProduct=await this.productsRepository.save(newProduct) 
+
+
         } catch (error) {
             throw new RequestTimeoutException('Unable to process your request,please try again later',{
                 description:'Error connecting to database'
@@ -164,4 +172,6 @@ export class ProductsService {
         }
        
     }
+
+  
 }

@@ -3,6 +3,7 @@ import { ProductsService } from './providers/products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PatchProductDto } from './dtos/patch-product.dto';
+import { CartService } from 'src/cart/providers/cart.service';
 
 @ApiTags("Products")
 @Controller('products')
@@ -11,7 +12,9 @@ export class ProductsController {
     constructor(
 
         //product service Inject
-        private readonly productsService:ProductsService
+        private readonly productsService:ProductsService,
+
+        private readonly cartService:CartService
     
     ){}
 
@@ -84,5 +87,20 @@ export class ProductsController {
    public deleteProduct(@Query('id',ParseIntPipe) id:number){
     return this.productsService.deleteProduct(id)
    }
+
+   //route for add to cart
+
+   @Post("/:userId/:productId/addToCart")
+   @ApiOperation({
+    summary:"add to cart"
+  })
+  @ApiResponse({
+    status:200,
+    description:"product added to cart successfully"
+  })
+ public addToCart(@Param('userId',ParseIntPipe) userId:number,@Param('productId',ParseIntPipe) productId:number){
+  return this.cartService.addCartItem(userId,productId)
+ }
+   
 
 }

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { CartItem } from "src/cart/cart-item.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Products{
@@ -51,4 +52,8 @@ featuredImageUrl:string;
     nullable:true,
 })
 slug:string;
+
+ // one Product appears in many cart items
+@OneToMany(() => CartItem, (cartItem) => cartItem.product)
+cartItems:CartItem[]  //checking
 }
