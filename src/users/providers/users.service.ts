@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuthService } from 'src/auth/providers/auth.service';
 import { CreateUserProvider } from './create-user.provider';
 import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
+import { Cart } from 'src/cart/cart.entity';
 
 @Injectable()
 export class UsersService {
@@ -22,12 +23,22 @@ export class UsersService {
 
         private readonly createUserProvider:CreateUserProvider,
 
-        private readonly findOneUserByEmailProvider:FindOneUserByEmailProvider
+        private readonly findOneUserByEmailProvider:FindOneUserByEmailProvider,
+        
+        @InjectRepository(Cart)
+        private readonly cartRepository:Repository<Cart>,
+
+
+
     ){}
     public async getUsers(){
         let users;
         try {
-            users=await this.usersRepository.find();
+            users=await this.usersRepository.find({
+                relations:{
+                    cart:true             //when fetching users it will fetch cart also
+                }
+            });
         } catch (error) {
             throw new RequestTimeoutException('Unable to process your request,please try again',{
                 description:'Error connecting to database'
@@ -51,7 +62,44 @@ export class UsersService {
         return user;
     }
     public async createUser(createUserDto:CreateUserDto){
-      return this.createUserProvider.createUser(createUserDto)
+        //check for existing user with same email
+        let existingUser;
+        try {
+            existingUser=await this.usersRepository.findOne({
+                where:{email:createUserDto.email}
+            })
+        } catch (error) {
+            throw new RequestTimeoutException('Unable to process your request,please try again',{
+                description:'Error connecting to database'
+            })
+        }
+       
+        //handle exception
+        if(existingUser){
+            throw new BadRequestException('User already exist')
+        }
+
+        //create new user
+        let newUser=this.usersRepository.create(createUserDto);
+
+        try {
+            newUser=await this.usersRepository.save(newUser);
+
+            // Create cart manually
+
+                    const cart = this.cartRepository.create({user:{id:newUser.id}});
+                     await this.cartRepository.save(cart);
+
+                    newUser.cart = cart;
+                    await this.usersRepository.save(newUser); // now the cartId gets set
+
+        } catch (error) {
+            throw new RequestTimeoutException('Unable to process your request,please try again',{
+                description:'Error connecting to database'
+            })
+        }
+        
+        return newUser;
     }
     public async updateUser(patchUserDto:PatchUserDto){
         let user;
@@ -84,6 +132,7 @@ export class UsersService {
         return user;
     }
     public async deleteUser(id:number){
+
         let user;
         try {
             user=this.usersRepository.findOneBy({id})
@@ -102,7 +151,7 @@ export class UsersService {
                 await this.usersRepository.delete(id)
             } catch (error) {
                 throw new RequestTimeoutException('Unable to process your request,please try again',{
-                    description:'Error connecting to database'
+                    description:'Error connecting to database2'
                 }) 
             }
             

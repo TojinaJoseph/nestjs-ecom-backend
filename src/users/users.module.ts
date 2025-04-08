@@ -6,6 +6,7 @@ import { Users } from './users.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { CreateUserProvider } from './providers/create-user.provider';
 import { FindOneUserByEmailProvider } from './providers/find-one-user-by-email.provider';
+import { Cart } from 'src/cart/cart.entity';
 @Module({
   controllers: [UsersController],
   providers: [
@@ -14,9 +15,10 @@ import { FindOneUserByEmailProvider } from './providers/find-one-user-by-email.p
     FindOneUserByEmailProvider
   ],
   imports:[
-    TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([Users,Cart]),
     forwardRef(()=>AuthModule),
   ] ,     //using user entity
   exports:[UsersService]
+
 })
 export class UsersModule {}
