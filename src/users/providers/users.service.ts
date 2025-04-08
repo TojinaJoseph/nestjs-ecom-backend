@@ -1,10 +1,13 @@
-import { BadRequestException, Injectable, RequestTimeoutException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, RequestTimeoutException } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { Repository } from 'typeorm';
 import { Users } from '../users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PatchUserDto } from '../dtos/patch-user.dto';
 import { ConfigService } from '@nestjs/config';
+import { AuthService } from 'src/auth/providers/auth.service';
+import { CreateUserProvider } from './create-user.provider';
+import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
 
 @Injectable()
 export class UsersService {
@@ -12,11 +15,16 @@ export class UsersService {
         @InjectRepository(Users)
         private readonly usersRepository:Repository<Users>,
 
-        private readonly configService:ConfigService
+        private readonly configService:ConfigService,
+
+        @Inject(forwardRef(()=>AuthService))
+        private readonly authService:AuthService,
+
+        private readonly createUserProvider:CreateUserProvider,
+
+        private readonly findOneUserByEmailProvider:FindOneUserByEmailProvider
     ){}
     public async getUsers(){
-        let envVariable=process.env.NODE_ENV;
-        console.log(envVariable)
         let users;
         try {
             users=await this.usersRepository.find();
@@ -43,35 +51,7 @@ export class UsersService {
         return user;
     }
     public async createUser(createUserDto:CreateUserDto){
-        //check for existing user with same email
-        let existingUser;
-        try {
-            existingUser=await this.usersRepository.findOne({
-                where:{email:createUserDto.email}
-            })
-        } catch (error) {
-            throw new RequestTimeoutException('Unable to process your request,please try again',{
-                description:'Error connecting to database'
-            })
-        }
-       
-        //handle exception
-        if(existingUser){
-            throw new BadRequestException('User already exist')
-        }
-
-        //create new user
-        let newUser=this.usersRepository.create(createUserDto);
-
-        try {
-            newUser=await this.usersRepository.save(newUser);
-        } catch (error) {
-            throw new RequestTimeoutException('Unable to process your request,please try again',{
-                description:'Error connecting to database'
-            })
-        }
-        
-        return newUser;
+      return this.createUserProvider.createUser(createUserDto)
     }
     public async updateUser(patchUserDto:PatchUserDto){
         let user;
@@ -88,10 +68,11 @@ export class UsersService {
         }
 
         if(user){
-            user.firstName=patchUserDto.firstName;
-            user.lastName=patchUserDto.lastName;
-            user.email=patchUserDto.email;
-            user.password=patchUserDto.password;
+    
+            user.firstName=patchUserDto.firstName?patchUserDto.firstName:user.firstName;
+            user.lastName=patchUserDto.lastName?patchUserDto.lastName:user.lastName;
+            user.email=patchUserDto.email?patchUserDto.email:user.email;
+            user.password=patchUserDto.password?patchUserDto.password:user.password;
         }
         try {
             await this.usersRepository.save(user)
@@ -128,5 +109,8 @@ export class UsersService {
         }
         
         return {deleted:true,id};
+    }
+    public async findOneByEmail(email:string){
+      return this.findOneUserByEmailProvider.findOneByEmail(email);
     }
 }
