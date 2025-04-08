@@ -1,11 +1,17 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, SetMetadata, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './providers/users.service';
 import { CreateUserDto} from './dtos/create-user.dto';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PatchUserDto } from './dtos/patch-user.dto';
+import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 
 @Controller('users')
 @ApiTags('Users')
+@ApiBearerAuth('access-token')
 export class UsersController {
     constructor(
         private readonly usersService: UsersService,
@@ -36,6 +42,8 @@ public getUser(@Param('id',ParseIntPipe) id:number){
 }
 
 @Post()
+// @SetMetadata('authType','none')
+@Auth(AuthType.None)   //custom decorator
 @ApiOperation({
     summary:'Create a user'
 })
@@ -56,10 +64,15 @@ public createUser(@Body() createUserDto:CreateUserDto){
     status:200,
     description:'User updated successfully.'
 })
-public updateUser(@Body() patchUserDto:PatchUserDto){
+public updateUser(
+    @Body() patchUserDto:PatchUserDto,
+    @ActiveUser() user:ActiveUserData      //for getting user from the jwt payload
+){
+    console.log(user);
     return this.usersService.updateUser(patchUserDto);
 }
 
+// @UseGuards(AccessTokenGuard)   //guards for single route
 @Delete()
 @ApiOperation({
     summary:'Delete the registered user'
