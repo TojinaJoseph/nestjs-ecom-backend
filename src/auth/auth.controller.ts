@@ -4,6 +4,8 @@ import { SignInDto } from './dtos/signin.dto';
 import { Auth } from './decorators/auth.decorator';
 import { AuthType } from './enums/auth-type.enum';
 import { RefreshTokenDto } from './dtos/refresh-token.dto';
+import { ActiveUser } from './decorators/active-user.decorator';
+import { ActiveUserData } from './interfaces/active-user-data.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -23,4 +25,10 @@ export class AuthController {
     public async refreshTokens(@Body() refreshTokenDto:RefreshTokenDto){
       return this.authService.refreshTokens(refreshTokenDto)
     } 
+
+  @Post('sign-out')
+  @HttpCode(HttpStatus.OK)
+  public async signOut(@ActiveUser() user:ActiveUserData){
+    return this.authService.signOut(user)
+  }
 }

@@ -29,7 +29,6 @@ export class CartService {
         let user;
         try {
             user=await this.userRepository.findOneBy({id:userid})
-            console.log(user)
         } catch (error) {
             throw new RequestTimeoutException('Unable to process your request,please try again',{
                 description:'Error connecting to database'
@@ -54,14 +53,20 @@ export class CartService {
                 try {
 
                    product=await this.productRepository.findOneBy({id:productId})
+                   console.log(product)
 
                     let [cart]=await this.cartRepository.find({where:{user:{id:userId}}})
                     carts=cart
-
+                    if(!carts){
+                        console.log("cannot find the carts")
+                    }
+                    console.log("carts",carts)
                     existingCartItem=await this.cartItemRepository.findOne({
                         where:{product:{id:productId},cart:{id:cart.id}}
                     })
+                    console.log(existingCartItem)
                 } catch (error) {
+                    console.log(error)
                     throw new RequestTimeoutException('Unable to process your request,please try again',{
                         description:'Error connecting to database'
                     })
@@ -78,9 +83,11 @@ export class CartService {
 
 
     let cartItem = this.cartItemRepository.create({product:{id:productId},cart:{id:carts.id}});
+    console.log(cartItem)
 
     cartItem={...cartItem,quantity:1,price:product?.price || 0}
 
+    console.log("hjhjhjhj",cartItem)
     // let cartItem=this.cartItemRepository.findOne({where:{product:{id:productId}}})
 
     let newcartItem=await this.cartItemRepository.save(cartItem);

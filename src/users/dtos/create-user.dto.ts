@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { Role } from "src/auth/enums/roles-type.enum";
 
 export class CreateUserDto{
     @ApiProperty({
@@ -42,4 +43,13 @@ export class CreateUserDto{
     @MaxLength(96)
     @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
     password: string;
+
+    @ApiProperty({
+        description:'It should be a string',
+        example:'user'
+    })
+    @IsEnum(Role, { message: 'Role must be one of: admin, user, seller' })
+    @IsString()
+    @IsNotEmpty()
+    role: Role;
 }

@@ -8,6 +8,8 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
 import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
+import { Roles } from 'src/auth/decorators/roles.decorator.decorator';
+import { Role } from 'src/auth/enums/roles-type.enum';
 
 @Controller('users')
 @ApiTags('Users')
@@ -87,6 +89,7 @@ public updateUser(
     description:"The id of user to delete",
     example:1
 })
+@Roles(Role.Admin)
 public deleteUser(@Query('id',ParseIntPipe) id:number){
     return this.usersService.deleteUser(id);
 }

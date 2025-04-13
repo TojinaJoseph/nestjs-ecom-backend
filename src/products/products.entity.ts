@@ -36,7 +36,7 @@ price:number;
 category:string;
 
 @Column({
-    type:'int',
+    type:'float',
     nullable:true
 })
 rating:number;
@@ -56,4 +56,5 @@ slug:string;
  // one Product appears in many cart items
 @OneToMany(() => CartItem, (cartItem) => cartItem.product)
 cartItems:CartItem[]  //checking
+
 }

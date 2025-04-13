@@ -6,6 +6,9 @@ import { Repository } from 'typeorm';
 import { PatchProductDto } from '../dtos/patch-product.dto';
 import { ConfigService } from '@nestjs/config';
 import { CartItem } from 'src/cart/cart-item.entity';
+import { GetProductsDto } from '../dtos/get-products.dto';
+import { PaginationProvider } from 'src/common/pagination/providers/pagination.provider.ts';
+import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
 
 
 @Injectable()
@@ -22,6 +25,7 @@ export class ProductsService {
 
         private readonly configService:ConfigService,
 
+        private readonly paginationProvider:PaginationProvider,
     ){}
 
      //service for get one product
@@ -45,17 +49,14 @@ export class ProductsService {
 
     //service for get all products
 
-    public async getProducts(){
-  
-        let products;
-        try {
-            products=await this.productsRepository.find()
-        } catch (error) {
-            throw new RequestTimeoutException('Unable to process your request,please try again later',{
-                description:'Error connecting to database'
-            }) 
-        }
-        return products;
+    public async getProducts(productQuery: GetProductsDto):Promise<Paginated<Products>>{
+        let products=await this.paginationProvider.paginateQuery({
+            limit:productQuery.limit,
+            page:productQuery.page
+        },
+        this.productsRepository
+    )
+    return products;
     }
 
     //service for creating product
@@ -85,12 +86,12 @@ export class ProductsService {
         //create a new product
 
         let newProduct=this.productsRepository.create(data)
-
+       console.log("in createproduct");
         try {
             newProduct=await this.productsRepository.save(newProduct) 
-
-
+            console.log(newProduct)
         } catch (error) {
+            console.error("Error saving product:", error);
             throw new RequestTimeoutException('Unable to process your request,please try again later',{
                 description:'Error connecting to database'
             })  
