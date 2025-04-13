@@ -4,6 +4,8 @@ import { CreateOrderDto } from './dtos/create-order.dto';
 import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Roles } from 'src/auth/decorators/roles.decorator.decorator';
+import { Role } from 'src/auth/enums/roles-type.enum';
 
 @Controller('order')
 export class OrderController {
@@ -18,6 +20,7 @@ export class OrderController {
         description:"orders fetched successfully"
       })
     @Get()
+    @Roles(Role.Admin)
     public getOrders(){
         return this.orderService.findOrders();
     }
