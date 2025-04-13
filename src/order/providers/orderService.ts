@@ -9,6 +9,7 @@ import { CartService } from 'src/cart/providers/cart.service';
 import { ShippingAddressDto } from '../dtos/create-shipping-address.dto';
 import { UsersService } from 'src/users/providers/users.service';
 import { OrderItem } from '../order-item.entity';
+import { Roles } from 'src/auth/decorators/roles.decorator.decorator';
 
 @Injectable()
 export class OrderService {
@@ -24,24 +25,37 @@ export class OrderService {
         private readonly orderItemRepository:Repository<OrderItem>
     ){}
     public async createOrder(activeUser:ActiveUserData, createOrderDto:CreateOrderDto){
+
+          //checking whether order is already created or not based on userId;
+         const [Order]=await this.orderRepository.find({
+            where:{user:{id:activeUser.sub}}
+         })
+         const orders=Order
+         if(orders){
+            return {
+                message:"Order already exist"
+            }
+         }
+
         //fetch cartitems using the userid and add to the order
-        console.log(activeUser.sub)
         let cartItems;
         let user;
         try {
 
             user=await this.usersService.getUser(activeUser.sub);
             cartItems=await this.cartService.getCart(activeUser.sub);
-            console.log(cartItems.items);
+           
             
         } catch (error) {
-            console.log("error")
+            
              throw new ConflictException(error)
         }
        
 
-        if (!cartItems || cartItems.length === 0) {
-            throw new Error('No items found in the cart');
+        if (!cartItems || cartItems.items.length === 0) {
+            return {
+                message:"No items found in the cart"
+            }
           }
         //create shipping address  - auto creation because we use cascade in order entity
 
@@ -60,13 +74,6 @@ export class OrderService {
           const totalPrice = orderItems.reduce((sum, item) => {
             return sum + item.quantity * item.price;
           }, 0);
-        //create an order
-        console.log(user.id)
-          // Step 3: Create Order with the order items
-    // const order = new Order();
-    // order.status = status;
-    // order.shippingAddress = shippingAddress; // assuming address is correctly set
-    // order.items = await this.orderItemRepository.save(orderItems); // Save order items
 
         let order=this.orderRepository.create({
             ...createOrderDto,
@@ -74,14 +81,6 @@ export class OrderService {
             items:await this.orderItemRepository.save(orderItems),
             totalPrice:totalPrice
         })
-
-        //add shipping address to the order
-        // if(shippingAddress && cartItems){
-        //     order.shippingAddress=shippingAddress
-        //     // order.items=cartItems.items
-        // }
-        
-        console.log(order);
 
         //return the order
         try {
@@ -92,61 +91,25 @@ export class OrderService {
         
     }
     public async findOrders(){
-        const orders =this.orderRepository.find();
-        return orders
+        return this.orderRepository.find();
     }
     public async getOneOrder(orderId:number){
         return this.orderRepository.findOneBy({id:orderId})
     }
     
-    public async deleteOrder(id:number){    //as shippingaddress and order are one to one related
-        //find the order                        //Delete order first as foreign key is in order otherwise foreign key constraint occur
-        //  let order;
-        // try {
-        //     order=await this.orderRepository.findOneBy({id})
-        //  } catch (error) {
-        //     throw new RequestTimeoutException('Unable to process your request,please try again',{
-        //         description:'Error connecting to database'
-        //     })
-        //  }
-
-
-        //  let inverseOrder=await this.shippingAddressRepository.find({         //finding order from shippingaddressrepository as it is now bidirectional one to one
-        //     where:{id:order.shippingAddress.id},
-        //     relations:{
-        //         order: true,
-        //     }
-        //  })
-
-
-
-        
-
-        //  if(!order){
-        //     throw new BadRequestException('order not exist');
-        //    }
-       
+    public async deleteOrder(id:number){   
+         //as shippingaddress and order are one to one related
+        //Delete order first as foreign key is in order otherwise foreign key constraint occur
+        //finding order from shippingaddressrepository as it is now bidirectional one to one
         //delete the order
         try {
-            await this.orderRepository.delete(id);
+            await this.orderRepository.delete(id);   //deleting order will auto delete shipping address
         } catch (error) {
             console.log(error)
             throw new RequestTimeoutException('Unable to process your request,please try again',{
                 description:'Error connecting to database'
             })
         }
-        
-        // //delete the shipping address
-        // try {
-        //     await this.shippingAddressRepository.delete(order.shippingAddress.id)
-        // } catch (error) {
-        //     throw new RequestTimeoutException('Unable to process your request,please try again',{
-        //         description:'Error connecting to database'
-        //     })
-        // }
-       
-        
-        //confirmation
         return{deleted:true,id}
     }
 }
