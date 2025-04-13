@@ -7,7 +7,7 @@ import { DataResponseInterceptor } from './common/interceptors/data-response/dat
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-//swagger configuration
+//swagger configurations................
 
   const config=new DocumentBuilder()
   .setTitle('Ecommerce-app API')
