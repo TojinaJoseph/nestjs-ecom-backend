@@ -1,9 +1,12 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { ProductsService } from './providers/products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PatchProductDto } from './dtos/patch-product.dto';
 import { CartService } from 'src/cart/providers/cart.service';
+import { Roles } from 'src/auth/decorators/roles.decorator.decorator';
+import { Role } from 'src/auth/enums/roles-type.enum';
+import { GetProductsDto } from './dtos/get-products.dto';
 
 @ApiTags("Products")
 @Controller('products')
@@ -21,6 +24,7 @@ export class ProductsController {
 // route for getting one product
 
     @Get('/:id')
+    @ApiBearerAuth()
     @ApiOperation({
       summary:"fetch a product"
     })
@@ -42,13 +46,15 @@ export class ProductsController {
       status:200,
       description:"products fetched successfully"
     })
-    public getProducts(){
-       return this.productsService.getProducts()
+    public getProducts(@Query() productQuery: GetProductsDto){
+      console.log(productQuery);
+       return this.productsService.getProducts(productQuery)
     }
 
 //route for creating product
 
    @Post()
+   @Roles(Role.Admin)
    @ApiOperation({
       summary:"create a product"
     })
@@ -63,6 +69,7 @@ export class ProductsController {
 //route for upating product - patch
 
    @Patch()
+   @Roles(Role.Admin)
    @ApiOperation({
       summary:"update a product"
     })
@@ -77,6 +84,7 @@ export class ProductsController {
 //route for deleting product
 
    @Delete()
+   @Roles(Role.Admin)
    @ApiOperation({
       summary:"delete a product"
     })

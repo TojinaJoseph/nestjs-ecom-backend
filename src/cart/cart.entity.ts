@@ -17,5 +17,4 @@ user:Users    // inorder to delete,first need to delete cart where the foreign k
  // Cart has many items
  @OneToMany(() => CartItem, (cartItem) => cartItem.cart,{eager:true})   //{ cascade: true, eager: true }  one cart have many cartitems
 items:CartItem[]
-
 }

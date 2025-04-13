@@ -1,6 +1,8 @@
 import { Exclude } from "class-transformer";
+import { Role } from "src/auth/enums/roles-type.enum";
 import { Cart } from "src/cart/cart.entity";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Order } from "src/order/order.entity";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Users{
@@ -41,4 +43,14 @@ password:string;
 @OneToOne(()=>Cart,(cart) => cart.user,{cascade:true,eager:true})  //eager true - fetch cart along with post  
 // @JoinColumn()    //  user table will have cartId column generated,here cart should be created first before user created
 cart:Cart
+
+@Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.User,
+  })
+  role: Role;
+  
+  @OneToMany(()=>Order,(order)=>order.user)             //bidirectional one to one and many to one relation with order
+  orders: Order[]
 }

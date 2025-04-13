@@ -15,7 +15,7 @@ import { Cart } from 'src/cart/cart.entity';
     FindOneUserByEmailProvider
   ],
   imports:[
-    TypeOrmModule.forFeature([Users,Cart]),
+    TypeOrmModule.forFeature([Users,Cart]),   //autoloading entities in database
     forwardRef(()=>AuthModule),
   ] ,     //using user entity
   exports:[UsersService]

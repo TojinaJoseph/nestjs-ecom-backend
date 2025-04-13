@@ -15,6 +15,9 @@ import databaseConfig from './config/database.config';
 import environmentValidation from './config/environment.validation';
 import { AuthenticationGuard } from './auth/guards/authentication/authentication.guard';
 import { CartModule } from './cart/cart.module';
+import { RolesGuard } from './auth/guards/roles/roles.guard';
+import { PaginationModule } from './common/pagination/pagination.module';
+import { OrderModule } from './order/order.module';
 
 const ENV=process.env.NODE_ENV
 @Module({
@@ -47,7 +50,9 @@ const ENV=process.env.NODE_ENV
     AuthModule,
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
-    CartModule
+    CartModule,
+    PaginationModule,
+    OrderModule
   ],
   controllers: [AppController],
   providers: [
@@ -56,7 +61,11 @@ const ENV=process.env.NODE_ENV
           provide: APP_GUARD,
           useClass: AuthenticationGuard
         } ,   // entire application is now protected
-        AccessTokenGuard
+        AccessTokenGuard,
+        {
+          provide: APP_GUARD,
+          useClass: RolesGuard,
+        },
   ],
 })
 export class AppModule {

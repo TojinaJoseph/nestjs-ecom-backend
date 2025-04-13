@@ -62,44 +62,7 @@ export class UsersService {
         return user;
     }
     public async createUser(createUserDto:CreateUserDto){
-        //check for existing user with same email
-        let existingUser;
-        try {
-            existingUser=await this.usersRepository.findOne({
-                where:{email:createUserDto.email}
-            })
-        } catch (error) {
-            throw new RequestTimeoutException('Unable to process your request,please try again',{
-                description:'Error connecting to database'
-            })
-        }
-       
-        //handle exception
-        if(existingUser){
-            throw new BadRequestException('User already exist')
-        }
-
-        //create new user
-        let newUser=this.usersRepository.create(createUserDto);
-
-        try {
-            newUser=await this.usersRepository.save(newUser);
-
-            // Create cart manually
-
-                    const cart = this.cartRepository.create({user:{id:newUser.id}});
-                     await this.cartRepository.save(cart);
-
-                    newUser.cart = cart;
-                    await this.usersRepository.save(newUser); // now the cartId gets set
-
-        } catch (error) {
-            throw new RequestTimeoutException('Unable to process your request,please try again',{
-                description:'Error connecting to database'
-            })
-        }
-        
-        return newUser;
+      return this.createUserProvider.createUser(createUserDto)
     }
     public async updateUser(patchUserDto:PatchUserDto){
         let user;
