@@ -1,15 +1,17 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { ProductsService } from './providers/products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PatchProductDto } from './dtos/patch-product.dto';
 import { CartService } from 'src/cart/providers/cart.service';
 import { Roles } from 'src/auth/decorators/roles.decorator.decorator';
 import { Role } from 'src/auth/enums/roles-type.enum';
 import { GetProductsDto } from './dtos/get-products.dto';
+import { API_BEARER_AUTH } from 'src/common/constants/auth.constants';
 
 @ApiTags("Products")
 @Controller('products')
+@ApiBearerAuth(API_BEARER_AUTH)
 export class ProductsController {
 
     constructor(
@@ -46,8 +48,12 @@ export class ProductsController {
       status:200,
       description:"products fetched successfully"
     })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'category', required: false, type: String })
+    @ApiQuery({ name: 'minPrice', required: false, type: Number })
+    @ApiQuery({ name: 'maxPrice', required: false, type: Number })
     public getProducts(@Query() productQuery: GetProductsDto){
-      console.log(productQuery);
        return this.productsService.getProducts(productQuery)
     }
 

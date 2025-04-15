@@ -50,11 +50,19 @@ export class ProductsService {
     //service for get all products
 
     public async getProducts(productQuery: GetProductsDto):Promise<Paginated<Products>>{
+
         let products=await this.paginationProvider.paginateQuery({
             limit:productQuery.limit,
             page:productQuery.page
         },
-        this.productsRepository
+        this.productsRepository,
+        {
+            category: productQuery.category,
+            minPrice: productQuery.minPrice,
+            maxPrice: productQuery.maxPrice,
+          },
+        // productQuery.category ? { category: productQuery.category } : undefined,
+
     )
     return products;
     }

@@ -1,10 +1,12 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { CartService } from './providers/cart.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CartItemDto } from './dtos/cart-item.dto';
+import { API_BEARER_AUTH } from 'src/common/constants/auth.constants';
 
 @ApiTags("Cart")
 @Controller('cart')
+@ApiBearerAuth(API_BEARER_AUTH)
 export class CartController {
     constructor(private readonly cartService:CartService){}
 
