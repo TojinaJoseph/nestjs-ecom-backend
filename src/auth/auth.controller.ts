@@ -6,8 +6,11 @@ import { AuthType } from './enums/auth-type.enum';
 import { RefreshTokenDto } from './dtos/refresh-token.dto';
 import { ActiveUser } from './decorators/active-user.decorator';
 import { ActiveUserData } from './interfaces/active-user-data.interface';
+import { API_BEARER_AUTH } from 'src/common/constants/auth.constants';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiBearerAuth(API_BEARER_AUTH)
 export class AuthController {
     constructor(
         private readonly authService:AuthService

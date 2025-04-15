@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder,SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { DataResponseInterceptor } from './common/interceptors/data-response/data-response.interceptor';
+import { API_BEARER_AUTH } from './common/constants/auth.constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,7 +23,8 @@ async function bootstrap() {
       name: 'Authorization',
       in: 'header',
     },
-    'access-token', // security name 
+    API_BEARER_AUTH
+    // 'access-token', // security name 
   )
   .build();
   const document=SwaggerModule.createDocument(app,config);
@@ -40,7 +42,10 @@ async function bootstrap() {
       }
     }
   ))
-
+  app.enableCors({
+    origin: 'http://localhost:5173', // or specific origin
+    credentials: true,
+  });
   app.useGlobalInterceptors(new DataResponseInterceptor());   //interceptors for changing response object
   await app.listen(process.env.PORT ?? 3000);
 }

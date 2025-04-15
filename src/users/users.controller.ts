@@ -3,17 +3,17 @@ import { UsersService } from './providers/users.service';
 import { CreateUserDto} from './dtos/create-user.dto';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PatchUserDto } from './dtos/patch-user.dto';
-import { AccessTokenGuard } from 'src/auth/guards/access-token/access-token.guard';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
 import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 import { Roles } from 'src/auth/decorators/roles.decorator.decorator';
 import { Role } from 'src/auth/enums/roles-type.enum';
+import { API_BEARER_AUTH } from 'src/common/constants/auth.constants';
 
 @Controller('users')
 @ApiTags('Users')
-@ApiBearerAuth('access-token')
+@ApiBearerAuth(API_BEARER_AUTH)
 export class UsersController {
     constructor(
         private readonly usersService: UsersService,
@@ -55,6 +55,7 @@ public getUser(@Param('id',ParseIntPipe) id:number){
 })
 @UseInterceptors(ClassSerializerInterceptor)
 public createUser(@Body() createUserDto:CreateUserDto){
+    console.log(createUserDto)
     return this.usersService.createUser(createUserDto);
 }
 
