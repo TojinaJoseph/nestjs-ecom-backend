@@ -13,7 +13,7 @@ export class OrderItem{
     })
     order: Order;
   
-    @ManyToOne(() => Products)
+    @ManyToOne(() => Products,{ onDelete: 'CASCADE' })
     product: Products;
   
     @Column()
