@@ -94,7 +94,6 @@ export class ProductsService {
         //create a new product
 
         let newProduct=this.productsRepository.create(data)
-       console.log("in createproduct");
         try {
             newProduct=await this.productsRepository.save(newProduct) 
             console.log(newProduct)

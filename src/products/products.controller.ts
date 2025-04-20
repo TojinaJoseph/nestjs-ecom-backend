@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ProductsService } from './providers/products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -8,6 +8,11 @@ import { Roles } from 'src/auth/decorators/roles.decorator.decorator';
 import { Role } from 'src/auth/enums/roles-type.enum';
 import { GetProductsDto } from './dtos/get-products.dto';
 import { API_BEARER_AUTH } from 'src/common/constants/auth.constants';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { extname } from 'path';
+import { diskStorage } from 'multer';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
 
 @ApiTags("Products")
 @Controller('products')
@@ -41,6 +46,7 @@ export class ProductsController {
 // route for getting products
 
     @Get()
+    @Auth(AuthType.None) 
     @ApiOperation({
       summary:"fetch all products"
     })
@@ -68,8 +74,24 @@ export class ProductsController {
       status:200,
       description:"products created successfully"
     })
-   public createProduct(@Body() createProductDto:CreateProductDto){
-    return this.productsService.createProduct(createProductDto)
+    @UseInterceptors(FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
+          callback(null, filename);
+        },
+      }),
+    }))
+   public createProduct(@UploadedFile() file: Express.Multer.File,@Body() createProductDto:CreateProductDto){
+    const imageUrl = `http://localhost:3000/uploads/${file.filename}`;
+    const productWithImage = {
+      ...createProductDto,
+      featuredImageUrl: imageUrl,
+    };
+    return this.productsService.createProduct(productWithImage)
    }
 
 //route for upating product - patch
@@ -118,3 +140,4 @@ export class ProductsController {
    
 
 }
+

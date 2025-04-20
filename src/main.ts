@@ -4,9 +4,13 @@ import { DocumentBuilder,SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { DataResponseInterceptor } from './common/interceptors/data-response/data-response.interceptor';
 import { API_BEARER_AUTH } from './common/constants/auth.constants';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);   //for image uploads
+
 
 //swagger configuration with database
 
@@ -47,6 +51,10 @@ async function bootstrap() {
     credentials: true,
   });
   app.useGlobalInterceptors(new DataResponseInterceptor());   //interceptors for changing response object
+  // Serve static files from /uploads directory
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads', // So files can be accessed via http://localhost:3000/uploads/filename.jpg
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
