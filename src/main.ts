@@ -52,9 +52,9 @@ async function bootstrap() {
   });
   app.useGlobalInterceptors(new DataResponseInterceptor());   //interceptors for changing response object
   // Serve static files from /uploads directory
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
-    prefix: '/uploads', // So files can be accessed via http://localhost:3000/uploads/filename.jpg
-  });
+  // app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  //   prefix: '/uploads', // So files can be accessed via http://localhost:3000/uploads/filename.jpg
+  // });
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
