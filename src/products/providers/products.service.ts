@@ -9,6 +9,7 @@ import { CartItem } from 'src/cart/cart-item.entity';
 import { GetProductsDto } from '../dtos/get-products.dto';
 import { PaginationProvider } from 'src/common/pagination/providers/pagination.provider.ts';
 import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
+import { UploadService } from 'src/upload/upload.service';
 
 
 @Injectable()
@@ -26,6 +27,8 @@ export class ProductsService {
         private readonly configService:ConfigService,
 
         private readonly paginationProvider:PaginationProvider,
+
+        private readonly uploadService: UploadService,
     ){}
 
      //service for get one product
@@ -69,8 +72,7 @@ export class ProductsService {
 
     //service for creating product
 
-    public async createProduct(data:CreateProductDto){
-
+    public async createProduct(file: Express.Multer.File,data:CreateProductDto){
         //check for product
 
         let existingProduct;
@@ -92,11 +94,13 @@ export class ProductsService {
         }
         
         //create a new product
-
-        let newProduct=this.productsRepository.create(data)
+        const uploadedImage = await this.uploadService.uploadImage(file);
+        let newProduct=this.productsRepository.create({
+                ...data,
+                featuredImageUrl: uploadedImage.secure_url, //  store the image URL    
+        })
         try {
             newProduct=await this.productsRepository.save(newProduct) 
-            console.log(newProduct)
         } catch (error) {
             console.error("Error saving product:", error);
             throw new RequestTimeoutException('Unable to process your request,please try again later',{

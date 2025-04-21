@@ -67,6 +67,7 @@ export class ProductsController {
 
    @Post()
    @Roles(Role.Admin)
+   @UseInterceptors(FileInterceptor('image'))
    @ApiOperation({
       summary:"create a product"
     })
@@ -74,24 +75,27 @@ export class ProductsController {
       status:200,
       description:"products created successfully"
     })
-    @UseInterceptors(FileInterceptor('image', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
-          callback(null, filename);
-        },
-      }),
-    }))
+    // @UseInterceptors(FileInterceptor('image', {
+    //   storage: diskStorage({
+    //     destination: './uploads',
+    //     filename: (req, file, callback) => {
+    //       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    //       const ext = extname(file.originalname);
+    //       const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
+    //       callback(null, filename);
+    //     },
+    //   }),
+    // }))
+  //  public createProduct(@UploadedFile() file: Express.Multer.File,@Body() createProductDto:CreateProductDto){
    public createProduct(@UploadedFile() file: Express.Multer.File,@Body() createProductDto:CreateProductDto){
-    const imageUrl = `http://localhost:3000/uploads/${file.filename}`;
-    const productWithImage = {
-      ...createProductDto,
-      featuredImageUrl: imageUrl,
-    };
-    return this.productsService.createProduct(productWithImage)
+    
+  // const imageUrl = `http://localhost:3000/uploads/${file.filename}`;
+  //   const productWithImage = {
+  //     ...createProductDto,
+  //     featuredImageUrl: imageUrl,
+  //   };
+    // return this.productsService.createProduct(productWithImage)
+    return this.productsService.createProduct(file,createProductDto)
    }
 
 //route for upating product - patch

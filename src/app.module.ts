@@ -18,6 +18,7 @@ import { CartModule } from './cart/cart.module';
 import { RolesGuard } from './auth/guards/roles/roles.guard';
 import { PaginationModule } from './common/pagination/pagination.module';
 import { OrderModule } from './order/order.module';
+import { UploadModule } from './upload/upload.module';
 
 const ENV=process.env.NODE_ENV
 @Module({
@@ -52,7 +53,8 @@ const ENV=process.env.NODE_ENV
     JwtModule.registerAsync(jwtConfig.asProvider()),
     CartModule,
     PaginationModule,
-    OrderModule
+    OrderModule,
+    UploadModule
   ],
   controllers: [AppController],
   providers: [
