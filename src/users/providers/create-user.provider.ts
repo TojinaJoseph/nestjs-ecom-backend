@@ -28,6 +28,7 @@ export class CreateUserProvider {
                     where:{email:createUserDto.email}
                 })
             } catch (error) {
+                console.log(error)
                 throw new RequestTimeoutException('Unable to process your request,please try again',{
                     description:'Error connecting to database'
                 })
@@ -54,6 +55,7 @@ export class CreateUserProvider {
                 newUser.cart = cart;
                 await this.usersRepository.save(newUser); // now the cartId gets set
             } catch (error) {
+                console.log(error)
                 throw new RequestTimeoutException('Unable to process your request,please try again',{
                     description:'Error connecting to database'
                 })

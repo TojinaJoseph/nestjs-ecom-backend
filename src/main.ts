@@ -47,7 +47,7 @@ async function bootstrap() {
     }
   ))
   app.enableCors({
-    origin: ['http://localhost:5173','https://tojinajoseph.github.io/react-ecom-frontend/'] ,// or specific origin
+    origin: ['http://localhost:5173','https://tojinajoseph.github.io'] ,// or specific origin
     credentials: true,
   });
   app.useGlobalInterceptors(new DataResponseInterceptor());   //interceptors for changing response object
