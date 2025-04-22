@@ -47,7 +47,9 @@ async function bootstrap() {
     }
   ))
   app.enableCors({
-    origin: ['http://localhost:5173','https://tojinajoseph.github.io'] ,// or specific origin
+    origin: ['http://localhost:5173','https://tojinajoseph.github.io'] ,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Define allowed HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Define allowed headers// or specific origin
     credentials: true,
   });
   app.useGlobalInterceptors(new DataResponseInterceptor());   //interceptors for changing response object

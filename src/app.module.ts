@@ -37,13 +37,17 @@ const ENV=process.env.NODE_ENV
       
       useFactory:(configService:ConfigService)=>({
         type:'postgres',
+        url:configService.get('database.url'),
+        ssl: {
+          rejectUnauthorized: false,
+        },
         autoLoadEntities:configService.get('database.autoLoadEntities'),
-        synchronize:configService.get('database.synchronize') ,
-        port:+configService.get('database.port'),  //PORT converted into number from string by (+)
-        username:configService.get('database.user'),
-        password:configService.get('database.password'),
-        host:configService.get('database.host'),
-        database:configService.get('database.name'), 
+        synchronize:configService.get('database.synchronize') ,       //should be false for production
+        // port:+configService.get('database.port'),  //PORT converted into number from string by (+)
+        // username:configService.get('database.user'),
+        // password:configService.get('database.password'),
+        // host:configService.get('database.host'),
+        // database:configService.get('database.name'),
       }),
       inject:[ConfigService],
         
