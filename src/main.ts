@@ -13,7 +13,7 @@ async function bootstrap() {
 
 
   app.enableCors({
-    origin: ['http://localhost:5173','https://tojinajoseph.github.io'] ,
+    origin: ['http://localhost:5173','https://tojinajoseph.github.io','https://nestjs-ecom.onrender.com'] ,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Define allowed HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Define allowed headers// or specific origin
     credentials: true,
