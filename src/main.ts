@@ -12,6 +12,14 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);   //for image uploads
 
 
+  app.enableCors({
+    origin: ['http://localhost:5173','https://tojinajoseph.github.io'] ,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Define allowed HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Define allowed headers// or specific origin
+    credentials: true,
+  });
+
+
 //swagger configuration with database
 
   const config=new DocumentBuilder()
@@ -46,12 +54,7 @@ async function bootstrap() {
       }
     }
   ))
-  app.enableCors({
-    origin: ['http://localhost:5173','https://tojinajoseph.github.io'] ,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Define allowed HTTP methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Define allowed headers// or specific origin
-    credentials: true,
-  });
+
   app.useGlobalInterceptors(new DataResponseInterceptor());   //interceptors for changing response object
   // Serve static files from /uploads directory
   // app.useStaticAssets(join(__dirname, '..', 'uploads'), {
