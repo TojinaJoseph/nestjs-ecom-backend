@@ -13,6 +13,8 @@ import { extname } from 'path';
 import { diskStorage } from 'multer';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 
 @ApiTags("Products")
 @Controller('products')
@@ -131,7 +133,7 @@ export class ProductsController {
 
    //route for add to cart
 
-   @Post("/:userId/:productId/addToCart")
+   @Post("/:productId/addToCart")
    @ApiOperation({
     summary:"add to cart"
   })
@@ -139,8 +141,8 @@ export class ProductsController {
     status:200,
     description:"product added to cart successfully"
   })
- public addToCart(@Param('userId',ParseIntPipe) userId:number,@Param('productId',ParseIntPipe) productId:number){
-  return this.cartService.addCartItem(userId,productId)
+ public addToCart(@ActiveUser() user: ActiveUserData,@Param('productId',ParseIntPipe) productId:number){
+  return this.cartService.addCartItem(user.sub,productId)
  }
    
 
