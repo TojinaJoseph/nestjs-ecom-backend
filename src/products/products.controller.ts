@@ -31,6 +31,7 @@ export class ProductsController {
 // route for getting one product
 
     @Get('/:id')
+    @Auth(AuthType.None)
     @ApiBearerAuth()
     @ApiOperation({
       summary:"fetch a product"
