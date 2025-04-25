@@ -12,12 +12,14 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);   //for image uploads
 
 
-  app.enableCors({
-    origin: ['http://localhost:5173','https://tojinajoseph.github.io','https://nestjs-ecom.onrender.com'] ,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Define allowed HTTP methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Define allowed headers// or specific origin
-    credentials: true,
-  });
+  app.enableCors(
+  //   {
+  //   origin: ['http://localhost:5173','https://tojinajoseph.github.io','https://nestjs-ecom.onrender.com'] ,
+  //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Define allowed HTTP methods
+  //   allowedHeaders: ['Content-Type', 'Authorization'], // Define allowed headers// or specific origin
+  //   credentials: true,
+  // }
+);
 
 
 //swagger configuration with database
