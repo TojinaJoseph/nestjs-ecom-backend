@@ -27,7 +27,7 @@ async function bootstrap() {
   const config=new DocumentBuilder()
   .setTitle('Ecommerce-backend API')
   .setDescription('Use the base API url as http://localhost:3000')
-  .addServer('http://localhost:3000')
+  .addServer('https://nestjs-ecom.onrender.com')
   .setVersion('1.0')
   .addBearerAuth(
     {
